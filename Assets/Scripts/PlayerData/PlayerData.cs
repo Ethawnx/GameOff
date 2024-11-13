@@ -5,6 +5,9 @@ using UnityEngine;
 public class PlayerData : ScriptableObject
 {
     [Header("Teleport")]
+    public GameObject SpriteHint;
+    public float OrthoGraphicSize = 4f;
+    public float SlowMotionDuration = 2f;
     public float teleportRange = 50f;
 	public Vector2 tpOffset = new Vector2(1, 0f);
 	

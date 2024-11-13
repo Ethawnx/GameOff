@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c4b3b215aaca5843929e54381329b24, type: 3}
   m_Name: PlayerDATA
   m_EditorClassIdentifier: 
+  SpriteHint: {fileID: 0}
+  OrthoGraphicSize: 4
+  SlowMotionDuration: 2
   teleportRange: 5
   tpOffset: {x: 1, y: 0}
-  jumpHeight: 10
+  jumpHeight: 12
   coyoteTime: 0.2
   wallSlideVelocity: 3
   wallJumpVelocity: 5
-  wallJumpTime: 0.4
+  wallJumpTime: 0.3
   wallJumpAngle: {x: 1, y: 2}
   groundCheckRadius: 0
   groundMask:

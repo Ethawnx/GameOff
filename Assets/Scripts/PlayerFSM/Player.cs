@@ -19,8 +19,7 @@ public class Player: MonoBehaviour
     public Animator Anim { get; private set; }
     public InputManager InputManager { get; private set; }
     public Rigidbody2D RB { get; private set; }
-    public CapsuleCollider2D BodyCollider { get; private set; }
-    public BoxCollider2D FeetCollider { get; private set; }
+    public BoxCollider2D BodyCollider { get; private set; }
     
     #endregion
 
@@ -28,6 +27,7 @@ public class Player: MonoBehaviour
     public bool IsFacingRight { get; private set; }
     public int FacingDirection { get; private set; }
     public Vector2 TeleportPosition { get; private set; }
+    public Vector2 HitPosition { get; private set; }
 
     [SerializeField]
     private Transform _groudncheck;
@@ -58,9 +58,8 @@ public class Player: MonoBehaviour
 
         Anim = GetComponent<Animator>();
         RB = GetComponent<Rigidbody2D>();
+        BodyCollider = GetComponent<BoxCollider2D>();
         InputManager = GetComponentInChildren<InputManager>();
-        BodyCollider = GetComponentInChildren<CapsuleCollider2D>();
-        FeetCollider = GetComponentInChildren<BoxCollider2D>();
     }
     private void Start()
     {
@@ -107,18 +106,20 @@ public class Player: MonoBehaviour
     }
     public bool CheckIfCanTP() 
     {
-        Vector2 offset = new Vector2(0.4f * FacingDirection, 0f);
+        Vector2 offset = new Vector2(0.4f * FacingDirection, 0.3f);
         RaycastHit2D hit = Physics2D.Raycast((Vector2)transform.position + offset, (Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position).normalized, playerData.teleportRange);
+        Debug.DrawRay((Vector2)transform.position + offset, (Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position).normalized * playerData.teleportRange);
         if (hit.collider != null && hit.collider.CompareTag("Enemy")) 
         {
-            Vector2 detectedEnemyPos = hit.point;
+            Vector2 detectedEnemyPos = hit.collider.transform.position;
             int enemyDir = hit.collider.GetComponent<Enemy>().GetFacingDirection();
             Vector2 tpPos = detectedEnemyPos + playerData.tpOffset * (-enemyDir);
-            TeleportPosition = tpPos;
+            TeleportPosition = new Vector2(tpPos.x, detectedEnemyPos.y);
             return true;
         }
         else 
         {
+            HitPosition = hit.point;
             return false;
         }
     }
