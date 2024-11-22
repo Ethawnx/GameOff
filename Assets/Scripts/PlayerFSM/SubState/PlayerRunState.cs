@@ -17,6 +17,10 @@ public class PlayerRunState :PlayerGroundState
             {
                 stateMachine.ChangeState(player.IdleState);
             }
+            else if (InputManager.Movement.y < 0f && player.RollState.CanRoll()) 
+            {
+                stateMachine.ChangeState(player.RollState);
+            }
         }
     }
     public override void DoChecks()
@@ -37,5 +41,6 @@ public class PlayerRunState :PlayerGroundState
     public override void FixedDo()
     {
         base.FixedDo();
+        player.Run();
     }
 }

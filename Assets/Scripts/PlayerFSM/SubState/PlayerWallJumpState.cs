@@ -17,6 +17,7 @@ public class PlayerWallJumpState : PlayerAbilityState
     public override void Enter()
     {
         base.Enter();
+        //player.InitiateJump(1);
         player.RB.linearVelocity = new Vector2(playerData.wallJumpAngle.x * playerData.wallJumpVelocity * -player.FacingDirection, playerData.wallJumpAngle.y * playerData.wallJumpVelocity);
         player.CheckIfShouldFlip(-player.FacingDirection);
     }

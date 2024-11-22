@@ -309,7 +309,7 @@ Transform:
   m_GameObject: {fileID: 6616484742373435294}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.26, y: -2.83, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -482,9 +482,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _groudncheck: {fileID: 6737220812462877083}
   _groundCheckSize: {x: 0.34, y: 0.07}
+  _bumpedHead: {fileID: 0}
+  _bumpedHeadSize: {x: 0.49, y: 0.03}
   _wallCheck: {fileID: 4404514639705817519}
   _wallCheckDistance: 0.2
+  _ledgeCheck: {fileID: 0}
+  _ledgeCheckDistance: 0
   playerData: {fileID: 11400000, guid: 0a3d1c3ef8be8fc48a6a0835a0254ae4, type: 2}
+  _isJumping: 0
+  _isFastFalling: 0
+  _isFalling: 0
+  _fastFallTime: 0
+  _fastFallReleaseSpeed: 0
+  _numberOfJumpsUsed: 0
+  _apexPoint: 0
+  _timePastApexThreshold: 0
+  _isPastApexThreshold: 0
+  _jumpBufferTimer: 0
+  _jumpReleasedDuringBuffer: 0
+  _coyoteTimer: 0
 --- !u!114 &2499434788904533234
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,8 +9,8 @@ public class PlayerGroundState : PlayerState
     public override void Do()
     {
         base.Do();
-
-        if (InputManager.JumpWasPressed && player.CheckIfGrounded())
+        player._coyoteTimer = playerData.coyoteTime;
+        if (player._jumpBufferTimer > 0f && player._coyoteTimer > 0f) 
         {
             stateMachine.ChangeState(player.JumpState);
         }
@@ -31,17 +31,11 @@ public class PlayerGroundState : PlayerState
     public override void Enter()
     {
         base.Enter();
-        player.SetLastOnGroundTime(playerData.coyoteTime);
+        
     }
-
-    public override void Exit()
-    {
-        base.Exit();
-    }
-
     public override void FixedDo()
     {
         base.FixedDo();
-        player.Run();
+        
     }
 }

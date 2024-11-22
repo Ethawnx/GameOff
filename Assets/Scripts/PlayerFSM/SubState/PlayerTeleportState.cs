@@ -3,7 +3,6 @@ using Unity.AppUI.UI;
 using Unity.Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.Rendering.HableCurve;
 
 public class PlayerTeleportState : PlayerAbilityState
 {
@@ -65,7 +64,7 @@ public class PlayerTeleportState : PlayerAbilityState
             else 
             {
                 Draw();
-                ZoomCamera();
+                MoveCamera();
             }
 
             /* if (timeElapsed > slowMotionDuration || !InputManager.TeleportIsHeld) 
@@ -102,12 +101,11 @@ public class PlayerTeleportState : PlayerAbilityState
         cinemachineCam.TargetOffset.Set(0f, 0f, 0f);
         isAbilityDone = true;
     }
-    private void ZoomCamera() 
+    private void MoveCamera() 
     {
         timeElapsed += Time.unscaledDeltaTime;
         Vector2 difference = Mouseposition - player.transform.position;
         cinemachineCam.TargetOffset = difference;
-        Camera.main.orthographicSize = Mathf.Lerp(initialOrthographicSize, targetOrthographicSize, timeElapsed/slowMotionDuration);
     }
     private void Draw() 
     {

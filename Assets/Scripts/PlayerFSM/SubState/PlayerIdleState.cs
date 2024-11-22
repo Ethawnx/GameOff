@@ -12,29 +12,19 @@ public class PlayerIdleState: PlayerGroundState
         
         if (!isExitingState)
         {
-            if (InputManager.Movement.x != 0f) 
+            if (InputManager.Movement.x != 0f)
             {
                 stateMachine.ChangeState(player.RunState);
             }
+            else if (InputManager.Movement.y == -1f) 
+            {
+                stateMachine.ChangeState(player.CrouchState);
+            }
         }
     }
-    public override void DoChecks()
-    {
-        base.DoChecks();
-    }
-
-    public override void Enter()
-    {
-        base.Enter();
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-    }
-
     public override void FixedDo()
     {
         base.FixedDo();
+        player.RB.linearVelocity = Vector2.zero;
     }
 }

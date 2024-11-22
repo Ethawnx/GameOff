@@ -45,4 +45,5 @@ public class PlayerState
     {
 
     }
+    public virtual void AnimationFinishTrigger() => isAnimationFinished = true;
 }

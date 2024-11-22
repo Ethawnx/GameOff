@@ -10,17 +10,21 @@ public class PlayerTouchingWallState : PlayerState
     {
         base.Do();
 
-        if (InputManager.Movement.x != player.FacingDirection || !player.CheckIfTouchingWall()) 
+        if (InputManager.Movement.x != player.FacingDirection || !player.CheckIfTouchingWall())
         {
             stateMachine.ChangeState(player.AirState);
         }
-        else if (player.CheckIfGrounded()) 
+        else if (player.CheckIfGrounded())
         {
             stateMachine.ChangeState(player.IdleState);
         }
-        else if (InputManager.JumpWasPressed) 
+        else if (player._jumpBufferTimer > 0f)
         {
             stateMachine.ChangeState(player.WallJumpState);
+        }
+        else if (player.CheckIfOnLedge())
+        {
+            stateMachine.ChangeState(player.LedgeUpState);
         }
     }
 }

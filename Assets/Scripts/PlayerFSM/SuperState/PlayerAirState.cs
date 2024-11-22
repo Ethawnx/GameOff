@@ -3,12 +3,21 @@ using UnityEngine;
 public class PlayerAirState : PlayerState
 {
     Vector2 gravity;
+
     public PlayerAirState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName)
     {
     }
     public override void Do()
     {
         base.Do();
+
+        player._coyoteTimer -= Time.deltaTime;
+
+        if (InputManager.JumpWasReleased && player.RB.linearVelocityY > 0f)
+        {
+            player.RB.linearVelocityY = player.RB.linearVelocityY * 0.5f;
+        }
+
         if (InputManager.Movement.x != 0)
             player.CheckDirectionToFace(InputManager.Movement.x > 0);
 
@@ -16,7 +25,7 @@ public class PlayerAirState : PlayerState
         {
             stateMachine.ChangeState(player.IdleState);
         }
-        else if (player.CheckIfGrounded() && player.RB.linearVelocityY < 0.1f && InputManager.Movement.x != 0f) 
+        else if (player.CheckIfGrounded() && player.RB.linearVelocityY < 0.1f && InputManager.Movement.x != 0f)
         {
             stateMachine.ChangeState(player.RunState);
         }
@@ -24,9 +33,17 @@ public class PlayerAirState : PlayerState
         {
             stateMachine.ChangeState(player.TeleportState);
         }
-        else if (player.CheckIfTouchingWall() && InputManager.Movement.x == 1 * player.FacingDirection && player.RB.linearVelocityY < 1f) 
+        else if (player.CheckIfTouchingWall() && InputManager.Movement.x == 1 * player.FacingDirection && player.RB.linearVelocityY < 1f)
         {
             stateMachine.ChangeState(player.WallSlideState);
+        }
+        else if (player.CheckIfOnLedge() && InputManager.Movement.x == 1 * player.FacingDirection)
+        {
+            stateMachine.ChangeState(player.LedgeUpState);
+        }
+        else if (InputManager.JumpWasPressed && !player.CheckIfGrounded() && player._coyoteTimer > 0f ) 
+        {
+            stateMachine.ChangeState(player.JumpState);
         }
     }
     public override void DoChecks()
@@ -48,11 +65,16 @@ public class PlayerAirState : PlayerState
     public override void FixedDo()
     {
         base.FixedDo();
-        player.RB.AddForceY(-9.8f, ForceMode2D.Force);
         player.Run();
-        if (player.RB.linearVelocityY < 0f) 
+        player.RB.AddForceY(-9.8f, ForceMode2D.Force);
+        if (player.RB.linearVelocityY < 0f)
         {
-            player.RB.linearVelocity -= gravity * playerData.fallGravityMult * Time.deltaTime;
+            player.RB.linearVelocity -= playerData.fallGravityMult * Time.fixedDeltaTime * gravity;
+            player.RB.linearVelocityY = Mathf.Clamp(player.RB.linearVelocityY, -playerData.maxFallSpeed, 40f);
+        }
+        else if (player.RB.linearVelocityY > 0f) 
+        {
+            player.RB.linearVelocityY -= gravity.y * Time.fixedDeltaTime;
         }
     }
 }

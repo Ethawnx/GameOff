@@ -12,13 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c4b3b215aaca5843929e54381329b24, type: 3}
   m_Name: PlayerDATA
   m_EditorClassIdentifier: 
+  rollVelocity: 7
+  rollDuration: 0.5
+  numberOfRolls: 1
+  crouchColliderOffset: -0.13
+  crouchColliderSize: 0.75
+  StartPositionOffset: {x: 0.09, y: -0.23}
   SpriteHint: {fileID: 0}
   OrthoGraphicSize: 4
   SlowMotionDuration: 2
-  teleportRange: 5
+  teleportRange: 7
   tpOffset: {x: 1, y: 0}
-  jumpHeight: 12
-  coyoteTime: 0.2
+  jumpHeight: 2.5
+  jumpHeightCompensationFactor: 1.054
+  timeTillJumpApex: 0.35
+  gravityOnReleaseMultiplyer: 2
+  maxFallSpeed: 20
+  jumpBufferTime: 0.108
+  coyoteTime: 0.108
+  fallGravityMult: 3
   wallSlideVelocity: 3
   wallJumpVelocity: 5
   wallJumpTime: 0.3
@@ -38,12 +50,11 @@ MonoBehaviour:
     m_Bits: 128
   gravityStrength: -Infinity
   gravityScale: Infinity
-  fallGravityMult: 3
-  runMaxSpeed: 5
-  runAcceleration: 4
-  runAccelAmount: 40
-  runDecceleration: 4
-  runDeccelAmount: 40
-  accelInAir: 0.158
-  deccelInAir: 0.808
-  doConserveMomentum: 1
+  runMaxSpeed: 6
+  runAcceleration: 3
+  runAccelAmount: 25
+  runDecceleration: 3
+  runDeccelAmount: 25
+  accelInAir: 0.205
+  deccelInAir: 0.88
+  doConserveMomentum: 0

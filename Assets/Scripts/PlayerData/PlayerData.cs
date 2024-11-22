@@ -4,18 +4,38 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Player Data")] //Create a new playerData object by right clicking in the Project Menu then Create/Player/Player Data and drag onto the player
 public class PlayerData : ScriptableObject
 {
-    [Header("Teleport")]
-    public GameObject SpriteHint;
-    public float OrthoGraphicSize = 4f;
-    public float SlowMotionDuration = 2f;
-    public float teleportRange = 50f;
-	public Vector2 tpOffset = new Vector2(1, 0f);
-	
-	[Header("JumpState")]
-    public float jumpHeight; //Height of the player's jump
-	public float coyoteTime = 0.4f;
+    public float Gravity { get; private set; }
+    public float InitialJumpVelocity { get; private set; }
+	public float AdjustedJumpHeight { get; private set; }
 
-    [Header("Wall Slide State")]
+    [Header("Roll")]
+	public float rollVelocity = 10f;
+	public float rollDuration = 2f;
+	public int numberOfRolls = 1;
+	public float crouchColliderOffset = -0.13f;
+	public float crouchColliderSize = 0.75f;
+
+	[Header("LedgeUp")]
+	public Vector2 StartPositionOffset = new Vector2(0.9f, 0f);
+
+	[Header("Teleport")]
+	public GameObject SpriteHint;
+	public float OrthoGraphicSize = 4f;
+	public float SlowMotionDuration = 2f;
+	public float teleportRange = 50f;
+	public Vector2 tpOffset = new Vector2(1, 0f);
+
+	[Header("JumpState")]
+	public float jumpHeight = 6.5f; //Height of the player's jump
+	[Range(1f, 1.1f)] public float jumpHeightCompensationFactor = 1.054f;
+	public float timeTillJumpApex = 0.35f;
+	[Range(0.01f, 5f)] public float gravityOnReleaseMultiplyer = 2f;
+	public float maxFallSpeed = 26f;
+	[Range(0f, 1f)] public float jumpBufferTime = 0.125f;
+	[Range(0f, 1f)] public float coyoteTime = 0.4f;
+	public float fallGravityMult; //Multiplier to the player's gravityScale when falling.
+
+	[Header("Wall Slide State")]
 	public float wallSlideVelocity = 3f;
 
 	[Header("Wall Jump State")]
@@ -26,18 +46,16 @@ public class PlayerData : ScriptableObject
 	[Header("Check Variables")]
 	public float groundCheckRadius;
 	public LayerMask groundMask;
-    public LayerMask enemyLayerMask;
+	public LayerMask enemyLayerMask;
 	public LayerMask obstacleMask;
 	public LayerMask playerMask;
 
-    [Space(20)]
+	[Space(20)]
 	[Header("Gravity")]
+
 	[HideInInspector] public float gravityStrength; //Downwards force (gravity) needed for the desired jumpHeight and jumpTimeToApex.
 	[HideInInspector] public float gravityScale; //Strength of the player's gravity as a multiplier of gravity (set in ProjectSettings/Physics2D).
 												 //Also the value the player's rigidbody2D.gravityScale is set to.
-	[Space(5)]
-	public float fallGravityMult; //Multiplier to the player's gravityScale when falling.
-
 	[Space(20)]
 
 	[Header("Run")]
@@ -52,12 +70,16 @@ public class PlayerData : ScriptableObject
 	[Space(5)]
 	public bool doConserveMomentum = true;
 
-
-	//Unity Callback, called when the inspector updates
-	private void OnValidate()
+    private void OnEnable()
+    {
+        CalculateValues();
+    }
+    //Unity Callback, called when the inspector updates
+    private void OnValidate()
 	{
-		//Calculate the rigidbody's gravity scale (ie: gravity strength relative to unity's gravity value, see project settings/Physics2D)
-		gravityScale = gravityStrength / Physics2D.gravity.y;
+		CalculateValues();
+        //Calculate the rigidbody's gravity scale (ie: gravity strength relative to unity's gravity value, see project settings/Physics2D)
+        gravityScale = gravityStrength / Physics2D.gravity.y;
 
 		//Calculate are run acceleration & deceleration forces using formula: amount = ((1 / Time.fixedDeltaTime) * acceleration) / runMaxSpeed
 		runAccelAmount = (50 * runAcceleration) / runMaxSpeed;
@@ -67,5 +89,12 @@ public class PlayerData : ScriptableObject
 		runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, runMaxSpeed);
 		runDecceleration = Mathf.Clamp(runDecceleration, 0.01f, runMaxSpeed);
 		#endregion
+	}
+
+	private void CalculateValues() 
+	{
+		AdjustedJumpHeight = jumpHeight * jumpHeightCompensationFactor;
+		Gravity = -(2f * AdjustedJumpHeight) / Mathf.Pow(timeTillJumpApex, 2f);
+		InitialJumpVelocity = Mathf.Abs(Gravity) * timeTillJumpApex;
 	}
 }
