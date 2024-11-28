@@ -7,6 +7,12 @@ public class PlayerData : ScriptableObject
     public float Gravity { get; private set; }
     public float InitialJumpVelocity { get; private set; }
 	public float AdjustedJumpHeight { get; private set; }
+	[Header("Attack")]
+	public float attackRadius = 1f;
+    public int daggerCharges = 3;
+	public float attackCooldown = 0.3f;
+	public float attackDamage = 50f;
+	public Vector2 attackVelocity = new Vector2(2f, 0f);
 
     [Header("Roll")]
 	public float rollVelocity = 10f;

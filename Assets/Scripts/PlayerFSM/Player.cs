@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player: MonoBehaviour 
@@ -18,6 +15,8 @@ public class Player: MonoBehaviour
     public PlayerLedgeUpState LedgeUpState { get; private set; }
     public PlayerRollState RollState { get; private set; }
     public PlayerCrouchState CrouchState { get; private set; }
+    public PlayerDaggerAttackState DaggerAttackState { get; private set; }
+
     #region Components
     public Animator Anim { get; private set; }
     public InputManager InputManager { get; private set; }
@@ -26,6 +25,7 @@ public class Player: MonoBehaviour
     
     #endregion
 
+    public float TargetSpeed { get; private set; }
     public float LastOnGroundTime { get; private set; }
     public bool IsFacingRight { get; private set; }
     public int FacingDirection { get; private set; }
@@ -49,8 +49,8 @@ public class Player: MonoBehaviour
     private Transform _ledgeCheck;
     [SerializeField]
     private float _ledgeCheckDistance;
-
-    public float TargetSpeed { get; private set; }
+    [SerializeField]
+    private Transform _attackPoint;
     
     [SerializeField]
     private PlayerData playerData;
@@ -60,9 +60,16 @@ public class Player: MonoBehaviour
     private float defaultgroundCheckSize;
 
     //JumpBuffer Vars
+    [HideInInspector]
     public float _jumpBufferTimer;
     //Coyote Timer Vars
+    [HideInInspector]
     public float _coyoteTimer;
+
+    //DaggerVariables
+    public int numberOfElectricalCharges;
+
+    private IInteractable currentInteractable;
     private void Awake()
     {
         StateMachine = new PlayerStateMachine();
@@ -78,6 +85,7 @@ public class Player: MonoBehaviour
         LedgeUpState = new PlayerLedgeUpState(this, StateMachine, playerData, "LedgeUp");
         RollState = new PlayerRollState(this, StateMachine, playerData, "Roll");
         CrouchState = new PlayerCrouchState(this, StateMachine, playerData, "Crouch");
+        DaggerAttackState = new PlayerDaggerAttackState(this, StateMachine, playerData, "Attack");
 
         Anim = GetComponent<Animator>();
         RB = GetComponent<Rigidbody2D>();
@@ -92,10 +100,13 @@ public class Player: MonoBehaviour
         defaultColliderOffset = BodyCollider.offset;
         defaultColliderSize = BodyCollider.size;
         defaultgroundCheckSize = _groundCheckSize.y;
+        numberOfElectricalCharges = playerData.daggerCharges;
     }
     private void Update()
     {
         LastOnGroundTime -= Time.deltaTime;
+        Interact();
+
         if (InputManager.JumpWasPressed)
         {
             _jumpBufferTimer = playerData.jumpBufferTime;
@@ -110,7 +121,6 @@ public class Player: MonoBehaviour
     {
         StateMachine.CurrentState.FixedDo();
     }
-   
     public void Run()
     {
         TargetSpeed = InputManager.Movement.x * playerData.runMaxSpeed; 
@@ -136,6 +146,46 @@ public class Player: MonoBehaviour
         RB.AddForce(movement * Vector2.right, ForceMode2D.Force);
         
     }
+    public void Interact() 
+    {
+        if (InputManager.InteractKeyWasPressed && currentInteractable != null) 
+        {
+            currentInteractable.OnInteract();
+            currentInteractable.PopUI();
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.TryGetComponent<IInteractable>(out var interactable))
+        {
+            currentInteractable = interactable;
+            currentInteractable.PopUI();
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        IInteractable interactable = collision.GetComponent<IInteractable>();
+        if (interactable != null && interactable == currentInteractable) 
+        {
+            currentInteractable = null;
+        }
+    }
+    public void ChargeDagger() 
+    {
+        numberOfElectricalCharges = playerData.daggerCharges;
+    }
+    public void Attack() 
+    {
+        Collider2D enemy = Physics2D.OverlapCircle(_attackPoint.transform.position, playerData.attackRadius, playerData.enemyLayerMask);
+        if (enemy != null) 
+        {
+            Enemy foundEnemy = enemy.GetComponent<Enemy>();
+            foundEnemy.TakeDamage(playerData.attackDamage, CheckIfDaggerHasCharges());
+            numberOfElectricalCharges--;
+            Debug.Log("attacked");
+        }
+
+    }
     public void DetermineCornerPosition() 
     {
         RaycastHit2D hitX = Physics2D.Raycast((Vector2)_wallCheck.position, Vector2.right * FacingDirection, _wallCheckDistance, playerData.groundMask);
@@ -145,6 +195,17 @@ public class Player: MonoBehaviour
         CornerPosition = new Vector2(x, y);
     }
     #region CheckFunctions
+    public bool CheckIfDaggerHasCharges()
+    {
+        if (numberOfElectricalCharges > 0) 
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+    }
     public bool CheckIfBumpedHead()
     {
         return Physics2D.OverlapBox(_bumpedHead.position, _bumpedHeadSize, 0f, playerData.groundMask);

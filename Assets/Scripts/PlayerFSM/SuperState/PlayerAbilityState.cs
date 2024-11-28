@@ -8,10 +8,11 @@ public class PlayerAbilityState : PlayerState
     }
     public override void Do()
     {
+        //Debug.Log (player.RB.linearVelocityY);
         base.Do();
         if (isAbilityDone)
         {
-            if (player.CheckIfGrounded() && player.RB.linearVelocityY <= 0.0f)
+            if (player.CheckIfGrounded() && player.RB.linearVelocityY <= 2f)
             {
                 stateMachine.ChangeState(player.IdleState);
             }

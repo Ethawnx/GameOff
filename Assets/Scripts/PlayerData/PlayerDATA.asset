@@ -12,12 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c4b3b215aaca5843929e54381329b24, type: 3}
   m_Name: PlayerDATA
   m_EditorClassIdentifier: 
+  attackRadius: 1
+  daggerCharges: 2
+  attackCooldown: 0.5
+  attackDamage: 50
+  attackVelocity: {x: 0.2, y: 0}
   rollVelocity: 7
   rollDuration: 0.5
   numberOfRolls: 1
   crouchColliderOffset: -0.13
   crouchColliderSize: 0.75
-  StartPositionOffset: {x: 0.09, y: -0.23}
+  StartPositionOffset: {x: 0.09, y: -0.3}
   SpriteHint: {fileID: 0}
   OrthoGraphicSize: 4
   SlowMotionDuration: 2

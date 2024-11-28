@@ -11,6 +11,8 @@ public class PlayerAirState : PlayerState
     {
         base.Do();
 
+        player.Anim.SetFloat("YVelocity", player.RB.linearVelocityY);
+
         player._coyoteTimer -= Time.deltaTime;
 
         if (InputManager.JumpWasReleased && player.RB.linearVelocityY > 0f)
