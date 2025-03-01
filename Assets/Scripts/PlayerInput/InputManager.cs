@@ -16,8 +16,11 @@ public class InputManager : MonoBehaviour
     public static bool TeleportWasPressed;
     public static bool TeleportIsHeld;
     public static bool TeleportWasReleased;
-    public static bool RunIsHeld;
+    public static bool RunIsPressed;
     public static bool InteractKeyWasPressed;
+    //UI
+    public static bool MenuOpenWasPressed;
+    public static bool MenuCloseWasPressed;
 
     private InputAction _moveAction;
     private InputAction _jumpAction;
@@ -26,6 +29,9 @@ public class InputManager : MonoBehaviour
     private InputAction _MousePosAction;
     private InputAction _TeleportAction;
     private InputAction _InteractAction;
+    //UI
+    private InputAction _menuOpenAction;
+    private InputAction _menuCloseAction;
 
     void Awake()
     {
@@ -38,6 +44,9 @@ public class InputManager : MonoBehaviour
         _MousePosAction = playerInput.actions["Look"];
         _TeleportAction = playerInput.actions["Teleport"];
         _InteractAction = playerInput.actions["Interact"];
+
+        _menuOpenAction = playerInput.actions["MenuOpen"];
+        _menuCloseAction = playerInput.actions["MenuClose"];
     }
 
     void Update()
@@ -57,8 +66,11 @@ public class InputManager : MonoBehaviour
         TeleportIsHeld = _TeleportAction.IsPressed();
         TeleportWasReleased = _TeleportAction.WasReleasedThisFrame();
 
-        RunIsHeld = _runAction.IsPressed();
+        RunIsPressed = _runAction.WasPressedThisFrame();
 
         InteractKeyWasPressed = _InteractAction.WasPressedThisFrame();
+
+        MenuOpenWasPressed = _menuOpenAction.WasPressedThisFrame();
+        MenuCloseWasPressed = _menuCloseAction.WasPressedThisFrame();
     }
 }

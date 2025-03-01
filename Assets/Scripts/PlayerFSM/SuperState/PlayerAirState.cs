@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerAirState : PlayerState
 {
     Vector2 gravity;
-
+    float _fallSpeedDampingYThreshold;
     public PlayerAirState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName)
     {
     }
@@ -14,6 +14,17 @@ public class PlayerAirState : PlayerState
         player.Anim.SetFloat("YVelocity", player.RB.linearVelocityY);
 
         player._coyoteTimer -= Time.deltaTime;
+
+        if (player.RB.linearVelocityY < _fallSpeedDampingYThreshold && !CameraManager.instance.IsLerpingYDamping && !CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpYDamping(true);
+        }
+        if (player.RB.linearVelocityY >= 0f && !CameraManager.instance.IsLerpingYDamping && CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpedFromPlayerFalling = false;
+
+            CameraManager.instance.LerpYDamping(false);
+        }
 
         if (InputManager.JumpWasReleased && player.RB.linearVelocityY > 0f)
         {
@@ -35,7 +46,7 @@ public class PlayerAirState : PlayerState
         {
             stateMachine.ChangeState(player.TeleportState);
         }
-        else if (player.CheckIfTouchingWall() && InputManager.Movement.x == 1 * player.FacingDirection && player.RB.linearVelocityY < 1f)
+        else if (player.CheckIfTouchingWall() && InputManager.Movement.x == 1 * player.FacingDirection && player.RB.linearVelocityY < 1f && !player.CheckIfOnLedge())
         {
             stateMachine.ChangeState(player.WallSlideState);
         }
@@ -56,6 +67,7 @@ public class PlayerAirState : PlayerState
     public override void Enter()
     {
         base.Enter();
+        _fallSpeedDampingYThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
         gravity = new Vector2(0, 9.8f);
     }
 
@@ -74,7 +86,7 @@ public class PlayerAirState : PlayerState
             player.RB.linearVelocity -= playerData.fallGravityMult * Time.fixedDeltaTime * gravity;
             player.RB.linearVelocityY = Mathf.Clamp(player.RB.linearVelocityY, -playerData.maxFallSpeed, 40f);
         }
-        else if (player.RB.linearVelocityY > 0f) 
+        else if (player.RB.linearVelocityY > 0f)
         {
             player.RB.linearVelocityY -= gravity.y * Time.fixedDeltaTime;
         }

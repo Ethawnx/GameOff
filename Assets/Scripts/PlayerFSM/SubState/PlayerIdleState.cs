@@ -12,9 +12,13 @@ public class PlayerIdleState: PlayerGroundState
         
         if (!isExitingState)
         {
-            if (InputManager.Movement.x != 0f)
+            if (InputManager.Movement.x != 0f && player.IsOnRun())
             {
                 stateMachine.ChangeState(player.RunState);
+            }
+            else if (InputManager.Movement.x != 0f && !player.IsOnRun())
+            {
+                stateMachine.ChangeState(player.WalkState);
             }
             else if (InputManager.Movement.y == -1f) 
             {

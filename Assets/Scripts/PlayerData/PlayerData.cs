@@ -7,7 +7,11 @@ public class PlayerData : ScriptableObject
     public float Gravity { get; private set; }
     public float InitialJumpVelocity { get; private set; }
 	public float AdjustedJumpHeight { get; private set; }
-	[Header("Attack")]
+
+	[Header("VFX References")]
+	public GameObject SlideVFX;
+
+    [Header("Attack")]
 	public float attackRadius = 1f;
     public int daggerCharges = 3;
 	public float attackCooldown = 0.3f;
@@ -67,8 +71,13 @@ public class PlayerData : ScriptableObject
 	[Header("Run")]
 	public float runMaxSpeed; //Target speed we want the player to reach.
 	public float runAcceleration; //The speed at which our player accelerates to max speed, can be set to runMaxSpeed for instant acceleration down to 0 for none at all
-	[HideInInspector] public float runAccelAmount; //The actual force (multiplied with speedDiff) applied to the player.
+    [HideInInspector] public float walkAccelAmount;
+    [HideInInspector] public float walkDeccelAmount;
+    [HideInInspector] public float runAccelAmount; //The actual force (multiplied with speedDiff) applied to the player.
 	public float runDecceleration; //The speed at which our player decelerates from their current speed, can be set to runMaxSpeed for instant deceleration down to 0 for none at all
+	public float walkMaxSpeed;
+	public float walkAcceleration;
+	public float walkDecceleration;
 	[HideInInspector] public float runDeccelAmount; //Actual force (multiplied with speedDiff) applied to the player .
 	[Space(5)]
 	[Range(0f, 1)] public float accelInAir; //Multipliers applied to acceleration rate when airborne.
@@ -90,9 +99,11 @@ public class PlayerData : ScriptableObject
 		//Calculate are run acceleration & deceleration forces using formula: amount = ((1 / Time.fixedDeltaTime) * acceleration) / runMaxSpeed
 		runAccelAmount = (50 * runAcceleration) / runMaxSpeed;
 		runDeccelAmount = (50 * runDecceleration) / runMaxSpeed;
+        walkAccelAmount = (50 * walkAcceleration) / walkMaxSpeed;
+        walkDeccelAmount = (50 * walkDecceleration) / walkMaxSpeed;
 
-		#region Variable Ranges
-		runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, runMaxSpeed);
+        #region Variable Ranges
+        runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, runMaxSpeed);
 		runDecceleration = Mathf.Clamp(runDecceleration, 0.01f, runMaxSpeed);
 		#endregion
 	}

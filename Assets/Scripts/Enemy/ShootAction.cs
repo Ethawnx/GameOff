@@ -21,17 +21,20 @@ public partial class ShootAction : Action
     {
         trigger = Agent.Value.GetComponentInChildren<Trigger>();
         return Status.Running;
-
     }
 
     protected override Status OnUpdate()
     {
-        Shoot(FireRate);
+        
         if (!trigger.IsPlayerInLineOfSight()) 
         {
+            return Status.Failure;
+        }
+        else
+        {
+            Shoot(FireRate);
             return Status.Success;
         }
-        return Status.Running;
     }
 
     protected override void OnEnd()

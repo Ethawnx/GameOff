@@ -10,6 +10,8 @@ public class PlayerGroundState : PlayerState
     {
         base.Do();
 
+        player.IsOnRun();
+
         player._coyoteTimer = playerData.coyoteTime;
 
         if (player._jumpBufferTimer > 0f && player._coyoteTimer > 0f) 

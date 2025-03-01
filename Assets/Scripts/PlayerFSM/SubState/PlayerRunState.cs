@@ -17,6 +17,10 @@ public class PlayerRunState :PlayerGroundState
             {
                 stateMachine.ChangeState(player.IdleState);
             }
+            else if (InputManager.Movement.x != 0f && !player.IsRunning)
+            {
+                stateMachine.ChangeState(player.WalkState);
+            }
             else if (InputManager.Movement.y < 0f && player.RollState.CanRoll()) 
             {
                 stateMachine.ChangeState(player.RollState);

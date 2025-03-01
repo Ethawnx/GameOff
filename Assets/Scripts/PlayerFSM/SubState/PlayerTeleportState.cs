@@ -1,51 +1,52 @@
-using System.Collections;
-using Unity.AppUI.UI;
 using Unity.Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerTeleportState : PlayerAbilityState
 {
-    private float targetOrthographicSize;
     private float initialOrthographicSize;
     private float slowMotionDuration;
     private float timeElapsed;
     private LineRenderer lineHint;
     private LineRenderer circleHint;
     private SpriteRenderer spritHint;
-    private Vector3 Mouseposition;
+    private GameObject cameraFollowObject;
     private int segment = 100;
-    
-    CinemachinePositionComposer cinemachineCam;
+    private Vector3 defaultYdamp;
     public PlayerTeleportState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName)
     {
     }
     public override void Enter()
     {
         base.Enter();
+
         timeElapsed = 0f;
-        Time.timeScale = 0.1f;
+        Time.timeScale = 0.2f;
+
         slowMotionDuration = playerData.SlowMotionDuration;
-        targetOrthographicSize = playerData.OrthoGraphicSize;
-        initialOrthographicSize = Camera.main.orthographicSize;
-        cinemachineCam = Camera.main.GetComponent<CinemachinePositionComposer>();
+
+        cameraFollowObject = GameObject.FindGameObjectWithTag("FollowObject");
+
         LineRenderer[] renderers = player.GetComponentsInChildren<LineRenderer>();
+
         SpriteRenderer[] spriteRenderers = player.GetComponentsInChildren<SpriteRenderer>();
+
         spritHint = spriteRenderers[1];
-        lineHint = renderers[0];
+
         circleHint = renderers[1];
+        lineHint = renderers[0];
         lineHint.enabled = false;
         circleHint.enabled = false;
         spritHint.enabled = false;
+
         circleHint.positionCount = segment + 1;
+
         player.RB.linearVelocity = Vector2.zero;
-        //Debug.Log(Time.timeScale);
-        //
+
+        defaultYdamp = player.Cam.Damping;
     }
     public override void Do()
     {
         base.Do();
-        Mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         if (!isExitingState)
         {
@@ -53,7 +54,7 @@ public class PlayerTeleportState : PlayerAbilityState
             if (timeElapsed > slowMotionDuration || !InputManager.TeleportIsHeld)
             {
                 Camera.main.orthographicSize = initialOrthographicSize;
-                cinemachineCam.TargetOffset.Set(0f, 0f, 0f);
+                player.Cam.TargetOffset.Set(0f, 0f, 0f);
                 timeElapsed = 0f;
                 isAbilityDone = true;
                 if (player.CheckIfCanTP())
@@ -66,27 +67,6 @@ public class PlayerTeleportState : PlayerAbilityState
                 Draw();
                 MoveCamera();
             }
-
-            /* if (timeElapsed > slowMotionDuration || !InputManager.TeleportIsHeld) 
-            {
-                timeElapsed = 0f;
-                Camera.main.orthographicSize = initialOrthographicSize;
-                cinemachineCam.TargetOffset.Set(0f, 0f, 0f);
-                isAbilityDone = true;
-            } 
-            else if (timeElapsed > slowMotionDuration && InputManager.TeleportIsHeld)
-            {
-                timeElapsed = 0f;
-                Camera.main.orthographicSize = initialOrthographicSize;
-                cinemachineCam.TargetOffset.Set(0f, 0f, 0f);
-                isAbilityDone = true;
-            }
-            else 
-            {
-                timeElapsed += Time.unscaledDeltaTime;
-
-
-            }*/
         }
     }
     public override void Exit()
@@ -98,14 +78,17 @@ public class PlayerTeleportState : PlayerAbilityState
         circleHint.enabled= false;
         spritHint.enabled = false;
         Camera.main.orthographicSize = initialOrthographicSize;
-        cinemachineCam.TargetOffset.Set(0f, 0f, 0f);
+        player.Cam.TargetOffset.Set(0.5f, 0f, 0f);
+        player.Cam.Damping = defaultYdamp;
         isAbilityDone = true;
     }
     private void MoveCamera() 
     {
         timeElapsed += Time.unscaledDeltaTime;
-        Vector2 difference = Mouseposition - player.transform.position;
-        cinemachineCam.TargetOffset = difference;
+        Vector2 difference = player.Mouseposition - cameraFollowObject.transform.position;
+        //difference.Normalize();
+        player.Cam.Damping = new Vector3(1f, 1f, 1f);
+        player.Cam.TargetOffset = difference * player.FacingDirection;
     }
     private void Draw() 
     {
@@ -113,7 +96,7 @@ public class PlayerTeleportState : PlayerAbilityState
         lineHint.enabled = true;
         circleHint.enabled = true;
         CreateCircle();
-        Vector2 offset = new Vector2(0.2f * player.FacingDirection, 0.3f);
+        Vector2 offset = new(0.2f * player.FacingDirection, 0.3f);
         lineHint.SetPosition(0, (Vector2)player.transform.position + offset);
         if (player.CheckIfCanTP()) 
         {
@@ -127,7 +110,7 @@ public class PlayerTeleportState : PlayerAbilityState
         }
         else 
         {
-            Vector2 direction = (Mouseposition - player.transform.position);
+            Vector2 direction = (player.Mouseposition - player.transform.position);
             float distance = direction.magnitude;
             if (distance > playerData.teleportRange)
             {

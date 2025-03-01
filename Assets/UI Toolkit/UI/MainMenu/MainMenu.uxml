@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainMenu-USS.uss?fileID=7433441132597879392&amp;guid=b136c273eb0498842a6d955e4d48bf32&amp;type=3#MainMenu-USS" />
+    <ui:VisualElement name="Panel" class="panel" style="flex-grow: 1; display: flex; visibility: visible; overflow: visible; justify-content: center; align-items: center;">
+        <ui:VisualElement name="Menu" class="menu" style="flex-grow: 1; align-items: center; justify-content: space-evenly; align-self: auto; align-content: flex-start; padding-bottom: 20%; margin-top: 0; padding-top: 20%; background-color: rgba(26, 26, 26, 0.84); opacity: 1;">
+            <ui:Button text="Resume" name="Play" class="MainMenuButtons" />
+            <ui:Button text="Options" name="Options" class="MainMenuButtons" />
+            <ui:Button text="Exit" name="Exit" class="MainMenuButtons" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

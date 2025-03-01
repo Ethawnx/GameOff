@@ -10,4 +10,8 @@ public interface IInteractable
     {
 
     }
+    public void CloseUI()
+    {
+
+    }
 }

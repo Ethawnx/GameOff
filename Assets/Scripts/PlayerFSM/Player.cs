@@ -1,10 +1,13 @@
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player: MonoBehaviour 
 {
     public PlayerStateMachine StateMachine { get; private set; }
     public PlayerIdleState IdleState { get; private set; }
     public PlayerRunState RunState { get; private set; }
+    public PlayerWalkState WalkState { get; private set; }
     public PlayerJumpState JumpState { get; private set; }
     public PlayerAirState AirState { get; private set; }
     public PlayerAbilityState AbilityState { get; private set; }
@@ -32,6 +35,12 @@ public class Player: MonoBehaviour
     public Vector2 TeleportPosition { get; private set; }
     public Vector2 HitPosition { get; private set; }
     public Vector2 CornerPosition { get; private set; }
+    public bool IsInvulnerable {  get; private set; }
+    public bool IsRunning { get; private set; }
+    public Vector3 Mouseposition { get; private set; }
+    [Header("VFX References")]    
+    public GameObject SlideVFX;
+    public GameObject GroundSlideVFX;
 
     [SerializeField]
     private Transform _groudncheck;
@@ -69,12 +78,16 @@ public class Player: MonoBehaviour
     //DaggerVariables
     public int numberOfElectricalCharges;
 
+    public CameraFollowObject camfollowobj;
+    public CinemachinePositionComposer Cam;
+
     private IInteractable currentInteractable;
     private void Awake()
     {
         StateMachine = new PlayerStateMachine();
         IdleState = new PlayerIdleState(this, StateMachine, playerData, "Idle");
         RunState = new PlayerRunState(this, StateMachine, playerData, "Run");
+        WalkState = new PlayerWalkState(this, StateMachine, playerData, "Walk");
         JumpState = new PlayerJumpState(this, StateMachine, playerData, "Jump");
         AirState = new PlayerAirState(this, StateMachine, playerData, "Air");
         AbilityState = new PlayerAbilityState(this, StateMachine, playerData, "Ability");
@@ -94,6 +107,7 @@ public class Player: MonoBehaviour
     }
     private void Start()
     {
+        Anim.SetBool("IsDead", false);
         StateMachine.Initialize(IdleState);
         IsFacingRight = true;
         FacingDirection = 1;
@@ -101,11 +115,18 @@ public class Player: MonoBehaviour
         defaultColliderSize = BodyCollider.size;
         defaultgroundCheckSize = _groundCheckSize.y;
         numberOfElectricalCharges = playerData.daggerCharges;
+        IsInvulnerable = false;
+        IsRunning = false;
     }
     private void Update()
     {
         LastOnGroundTime -= Time.deltaTime;
-        Interact();
+
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.x = Mathf.Clamp(mousePos.x, 0, Screen.width);
+        mousePos.y = Mathf.Clamp(mousePos.y, 0, Screen.height);
+        Mouseposition = Camera.main.ScreenToWorldPoint(mousePos);
+
 
         if (InputManager.JumpWasPressed)
         {
@@ -115,6 +136,9 @@ public class Player: MonoBehaviour
         {
             _jumpBufferTimer -= Time.deltaTime;
         }
+
+        Interact();
+        
         StateMachine.CurrentState.Do();
     }
     private void FixedUpdate()
@@ -123,13 +147,15 @@ public class Player: MonoBehaviour
     }
     public void Run()
     {
-        TargetSpeed = InputManager.Movement.x * playerData.runMaxSpeed; 
+        TargetSpeed = IsRunning? InputManager.Movement.x * playerData.runMaxSpeed : InputManager.Movement.x * playerData.walkMaxSpeed; 
         TargetSpeed = Mathf.Lerp(RB.linearVelocity.x, TargetSpeed, 1f);
 
         float accelRate;
 
-        if (CheckIfGrounded())
+        if (CheckIfGrounded() && IsRunning)
             accelRate = (Mathf.Abs(TargetSpeed) > 0.01f) ? playerData.runAccelAmount : playerData.runDeccelAmount;
+        else if (CheckIfGrounded() && !IsRunning)
+            accelRate = (Mathf.Abs(TargetSpeed) > 0.01f) ? playerData.walkAccelAmount : playerData.walkDeccelAmount;
         else
             accelRate = (Mathf.Abs(TargetSpeed) > 0.01f) ? playerData.runAccelAmount * playerData.accelInAir : playerData.runDeccelAmount * playerData.deccelInAir;
 
@@ -151,7 +177,6 @@ public class Player: MonoBehaviour
         if (InputManager.InteractKeyWasPressed && currentInteractable != null) 
         {
             currentInteractable.OnInteract();
-            currentInteractable.PopUI();
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -167,6 +192,7 @@ public class Player: MonoBehaviour
         IInteractable interactable = collision.GetComponent<IInteractable>();
         if (interactable != null && interactable == currentInteractable) 
         {
+            currentInteractable.CloseUI();
             currentInteractable = null;
         }
     }
@@ -190,7 +216,7 @@ public class Player: MonoBehaviour
     {
         RaycastHit2D hitX = Physics2D.Raycast((Vector2)_wallCheck.position, Vector2.right * FacingDirection, _wallCheckDistance, playerData.groundMask);
         float x = hitX.point.x;
-        RaycastHit2D hitY = Physics2D.Raycast((Vector2)_ledgeCheck.transform.position + new Vector2(0.01f * -FacingDirection, 0f), Vector2.down, playerData.groundMask);
+        RaycastHit2D hitY = Physics2D.Raycast((Vector2)_ledgeCheck.transform.position + new Vector2(0.1f * FacingDirection, 0f), Vector2.down, playerData.groundMask);
         float y = hitY.point.y - 0.05f;
         CornerPosition = new Vector2(x, y);
     }
@@ -213,8 +239,8 @@ public class Player: MonoBehaviour
     public bool CheckIfCanTP()
     {
         Vector2 offset = new Vector2(0.4f * FacingDirection, 0.3f);
-        RaycastHit2D hit = Physics2D.Raycast((Vector2)transform.position + offset, (Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position).normalized, playerData.teleportRange);
-        Debug.DrawRay((Vector2)transform.position + offset, (Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position).normalized * playerData.teleportRange);
+        RaycastHit2D hit = Physics2D.Raycast((Vector2)transform.position + offset, (Mouseposition - transform.position).normalized, playerData.teleportRange,playerData.enemyLayerMask);
+        Debug.DrawRay((Vector2)transform.position + offset, (Mouseposition - transform.position).normalized * playerData.teleportRange);
         if (hit.collider != null && hit.collider.CompareTag("Enemy"))
         {
             Vector2 detectedEnemyPos = hit.collider.transform.position;
@@ -284,7 +310,30 @@ public class Player: MonoBehaviour
 
 		IsFacingRight = !IsFacingRight;
         FacingDirection *= -1;
-	}
+        camfollowobj.CallTurn();
+    }
+    public void SetVulnerability(bool isVulnerable) 
+    {
+        IsInvulnerable = isVulnerable;
+    }
+    public bool IsOnRun() 
+    {
+        if (InputManager.RunIsPressed) 
+        {
+            IsRunning = !IsRunning;
+        }
+        return IsRunning;
+    }
+    public void Die() 
+    {
+        Anim.SetTrigger("IsDEAD");
+        RB.linearVelocity = Vector3.zero;
+    }
+    public void ResetGame()
+    {
+        Anim.SetBool("IsDead", false);
+        SceneManager.LoadScene("Corp");
+    }
     private void OnDrawGizmosSelected() 
     {
         Gizmos.color = Color.green;

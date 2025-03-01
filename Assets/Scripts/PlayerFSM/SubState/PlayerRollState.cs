@@ -5,7 +5,8 @@ public class PlayerRollState :PlayerGroundState
 {
     bool isRolling;
     float rollTime;
-    //int numberOfAlowedRolls;
+
+    ParticleSystem slideVFX;
     public PlayerRollState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName)
     {
 
@@ -14,17 +15,18 @@ public class PlayerRollState :PlayerGroundState
     public override void Enter()
     {
         base.Enter();
-        player.BodyCollider.isTrigger = true;
+        player.SetVulnerability(true);
+        //player.BodyCollider.isTrigger = true;
         player.RB.gravityScale = 0;
         rollTime = playerData.rollDuration;
         isRolling = true;
+
+        slideVFX = player.GroundSlideVFX.GetComponentInChildren<ParticleSystem>();
+        slideVFX.Play();
     }
     public override void Do()
     {
         base.Do();
-        //Debug.Log(rollTime);
-        //Debug.Log("CanRoll: " + CanRoll());
-        //Debug.Log("isRolling: " + isRolling);
         rollTime -= Time.deltaTime;
         if (!isExitingState)
         {
@@ -37,7 +39,6 @@ public class PlayerRollState :PlayerGroundState
             {
                 stateMachine.ChangeState(player.CrouchState);
             }
-            //else if (InputManager.Movement.y )
         }
     }
     public override void FixedDo()
@@ -51,10 +52,13 @@ public class PlayerRollState :PlayerGroundState
     public override void Exit() 
     {
         base.Exit();
+        player.SetVulnerability(false);
         player.BodyCollider.isTrigger = false;
         isRolling = false;
         rollTime = playerData.rollDuration;
         player.RB.gravityScale = 1;
+
+        slideVFX.Stop();
     }
     private void Roll() 
     {

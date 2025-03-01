@@ -1,0 +1,148 @@
+.headlines {
+    font-size: 26px;
+    -unity-font-definition: url("project://database/Assets/TextMesh%20Pro/Fonts/PerfectDOSVGA437.ttf?fileID=12800000&guid=3442c2fc469c5114a97b668a9c8bc0a5&type=3#PerfectDOSVGA437");
+    margin-top: 10px;
+    margin-bottom: 5px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.sheet {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet.png?fileID=2800000&guid=07b3d162ec3288d42b83996fd9f0495f&type=3#NoteSheet");
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.84);
+    transition-property: scale;
+    transition-timing-function: ease-in-out;
+    transition-duration: 0.1s;
+}
+
+.sheet:hover {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet-hover.png?fileID=2800000&guid=f6c791c38bb110846843a1268aee62b6&type=3#NoteSheet-hover");
+    transition-property: scale, background-color;
+    transition-timing-function: ease-out-sine, ease;
+    transition-duration: 0.2s, 0s;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    scale: 1.1 1.1;
+}
+
+.sheet2 {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet(2).png?fileID=2800000&guid=67073722aa869714b9271ba757aea97b&type=3#NoteSheet(2)");
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.84);
+}
+
+.sheet2:hover {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet(2)-hover.png?fileID=2800000&guid=8eba298364b03ad42966c192b57e77c7&type=3#NoteSheet(2)-hover");
+    scale: 1.1 1.1;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    transition-property: scale, rotate;
+    transition-duration: 0.2s, 0.05s;
+    transition-timing-function: ease-in-out-sine, ease-in-out-sine;
+    rotate: 10deg;
+}
+
+.sheet3 {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet(4).png?fileID=2800000&guid=cb62121d207f5b64d80d4e9ed69f4fca&type=3#NoteSheet(4)");
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.84);
+}
+
+.sheet3:hover {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet(4)-hover.png?fileID=2800000&guid=d38b6c04099b7f6479d9705ff82d6acc&type=3#NoteSheet(4)-hover");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    scale: 1.09 1.09;
+    rotate: -1deg;
+    transition-property: scale, rotate;
+    transition-timing-function: ease-in-out-sine, ease-out-sine;
+    transition-duration: 0.2s, 0.05s;
+}
+
+.sheet4 {
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.84);
+    background-image: url("project://database/Assets/Arts/UI/Villain%20Picture.png?fileID=2800000&guid=37670ae91db501a4d80c07ab53696d87&type=3#Villain Picture");
+    -unity-background-scale-mode: scale-and-crop;
+    background-position-x: center 0;
+    background-position-y: center 0;
+    background-size: contain;
+}
+
+.sheet4:hover {
+    background-image: url("project://database/Assets/Arts/UI/Villain%20Picture-hover.png?fileID=2800000&guid=ccd00a5a4ddb07f42b203c7ff8f8a1e2&type=3#Villain Picture-hover");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    scale: 1.09 1.09;
+    transition-property: scale;
+    transition-timing-function: ease-in-out-sine;
+    transition-duration: 0.2s;
+}
+
+.sheet5 {
+    background-image: url("project://database/Assets/Arts/UI/MissingPerson.png?fileID=2800000&guid=3f535c57058bcdd488c1f9b85aeb159a&type=3#MissingPerson");
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.84);
+}
+
+.sheet5:hover {
+    background-image: url("project://database/Assets/Arts/UI/MissingPerson-hover.png?fileID=2800000&guid=3fed372d54d992b4087e10edc414a770&type=3#MissingPerson-hover");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    scale: 1.1 1.1;
+    rotate: 2deg;
+    transition-property: scale, rotate;
+    transition-duration: 0.2s, 0.05s;
+    transition-timing-function: ease-in-out-sine, ease-in-out-sine;
+    transition-delay: 0s, 0s;
+}
+
+.sheet6 {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet(3).png?fileID=2800000&guid=292b9d33be64d91419175f6859c51441&type=3#NoteSheet(3)");
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.84);
+}
+
+.sheet6:hover {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet(3)-hover.png?fileID=2800000&guid=b63072cdcd2871a42b325abf2b78ec1b&type=3#NoteSheet(3)-hover");
+    scale: 1.1 1.1;
+    rotate: -5deg;
+    transition-property: scale, rotate;
+    transition-timing-function: ease-in-out-sine, ease-in-out-sine;
+    transition-duration: 0.2s, 0.05s;
+}
+
+.sheet7 {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet(5).png?fileID=2800000&guid=f7aaf93ad9be54f45a02c3c534acdac2&type=3#NoteSheet(5)");
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.84);
+}
+
+.sheet7:hover {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet(5)-hover.png?fileID=2800000&guid=f88ce0bb4f0a9e14aaecaef2b442b536&type=3#NoteSheet(5)-hover");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    scale: 1.08 1.08;
+    rotate: 5deg;
+    transition-property: scale, rotate;
+    transition-duration: 0.2s, 0.05s;
+    transition-timing-function: ease-in-out-sine, ease-in-circ;
+}
+
+.sheet8 {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet(6).png?fileID=2800000&guid=06790808e7ec44449ad11bd615926a60&type=3#NoteSheet(6)");
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.84);
+}
+
+.sheet8:hover {
+    background-image: url("project://database/Assets/Arts/UI/NoteSheet(6)-hover.png?fileID=2800000&guid=66503df5f9954dd459fcebdd1e3463cf&type=3#NoteSheet(6)-hover");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    scale: 1.08 1.08;
+    rotate: -1deg;
+    transition-property: scale, rotate;
+    transition-duration: 0.2s, 0.05s;
+    transition-timing-function: ease-in-out-sine, ease-in-out-sine;
+}
+
+.detailpanel {
+    opacity: 0;
+}
+
+.detailpanel:enabled {
+    transition-property: opacity;
+    transition-timing-function: ease-in-out-sine;
+    transition-duration: 0.2s;
+    opacity: 1;
+}
+
+.detail-Sheet {
+}

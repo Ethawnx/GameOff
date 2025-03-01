@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.UIElements;
 
 public class Trigger : MonoBehaviour
 {
@@ -28,13 +26,13 @@ public class Trigger : MonoBehaviour
         target = GameObject.FindWithTag("Player").transform;
         enemy = GetComponentInParent<Enemy>();
         enemyGun = GetComponentInParent<Light2D>().transform;
-        //flashlight = GetComponent<Light2D>();
     }
     private void Update()
     {
-        //Debug.Log(IsPlayerInLineOfSight());
-        
-        facingDirection = enemy.GetFacingDirection();
+        if (enemy != null)
+        {
+            facingDirection = enemy.GetFacingDirection();
+        }
         //Debug.Log(_timer);
         flashlight.color = enemy.IsAggressive? Color.red: Color.white;
         if (IsPlayerInLineOfSight() && enemy.IsAggressive)
@@ -51,16 +49,10 @@ public class Trigger : MonoBehaviour
             ResetAim();
             enemy.SetAggresive(false);
         }
-        //Debug.Log(enemy.IsAggressive);
-        //Debug.Log("IsPlayerDetected " + IsPlayerDetected());
-        //Debug.Log("Contains " + Contains(target.position));
-        //Debug.Log("LOS " + IsPlayerInLineOfSight());
-        //Debug.Log(target.name);
     }
     private void OnDrawGizmos()
     {
         target = GameObject.FindWithTag("Player").transform;
-        //Gizmos.color = IsPlayerDetected() ? Color.white : Color.red;
 
         Vector2 origin = transform.position;
 
@@ -77,6 +69,7 @@ public class Trigger : MonoBehaviour
 
     public bool Contains(Vector2 position) 
     {
+        if (target == null) return false;
         Vector2 vecToTargetWorld = (target.transform.position - transform.position).normalized;
         
         if (Vector2.Distance(position, transform.position) > radius)
@@ -88,24 +81,32 @@ public class Trigger : MonoBehaviour
     }
     public bool IsPlayerInLineOfSight()
     {
-        //_timer = 5f;
+        if (target == null) return false;
         Vector2 vecToTargetWorld = (target.transform.position - transform.position).normalized;
-        Vector2 offset = new Vector2(0.3f * facingDirection, 0f);
-        RaycastHit2D hit = Physics2D.Raycast((Vector2)transform.position + offset, vecToTargetWorld);
+        Vector2 offset = new(0.3f * facingDirection, 0f);
+        RaycastHit2D[] hits = Physics2D.RaycastAll((Vector2)transform.position + offset, vecToTargetWorld, radius * 3);
         Debug.DrawRay((Vector2)transform.position + offset * facingDirection, vecToTargetWorld * radius, Color.blue);
-
-        if (hit.collider != null && hit.collider.CompareTag("Player"))
+        foreach (RaycastHit2D hit in hits) 
         {
-            //Debug.Log(hit.collider.tag);
-            return true;
+            if (hit.collider != null) 
+            {
+                
+                if (hit.collider.CompareTag("Player"))
+                {
+                    //Debug.Log(hit.collider.tag);
+                    return true;
+                }
+                else if (hit.collider.CompareTag("Ground"))
+                {
+                    return false;
+                }
+            }
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
     public bool IsPlayerDetected() 
     {
+        if (target == null) return false;
         detectedTime += Time.deltaTime;
         if (Contains(target.transform.position) && IsPlayerInLineOfSight()) 
         {
@@ -129,6 +130,7 @@ public class Trigger : MonoBehaviour
     }
     private void AimAtTarget()
     {
+        if (target == null) return;
         Vector2 direction = target.position - enemy.transform.position;
         direction.Normalize(); 
         // Rotate the gun to point at the player

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: PlayerDATA
   m_EditorClassIdentifier: 
   attackRadius: 1
-  daggerCharges: 2
+  daggerCharges: 3
   attackCooldown: 0.5
   attackDamage: 50
-  attackVelocity: {x: 0.2, y: 0}
+  attackVelocity: {x: 0.1, y: 0}
   rollVelocity: 7
   rollDuration: 0.5
   numberOfRolls: 1
@@ -57,8 +57,13 @@ MonoBehaviour:
   gravityScale: Infinity
   runMaxSpeed: 6
   runAcceleration: 3
+  walkAccelAmount: 16.666666
+  walkDeccelAmount: 16.666666
   runAccelAmount: 25
   runDecceleration: 3
+  walkMaxSpeed: 3
+  walkAcceleration: 1
+  walkDecceleration: 1
   runDeccelAmount: 25
   accelInAir: 0.205
   deccelInAir: 0.88
